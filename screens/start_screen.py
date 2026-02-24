@@ -83,15 +83,3 @@ class StartScreen(Screen):
     def exit_game(self, instance):
         print(">> กดปุ่มออกแอป!")
         App.get_running_app().stop()
-
-if __name__ == '__main__':
-    from kivy.app import App
-    from kivy.uix.screenmanager import ScreenManager
-
-    class TestStartApp(App):
-        def build(self):
-            sm = ScreenManager()
-            sm.add_widget(StartScreen(name='start'))
-            return sm
-
-    TestStartApp().run()
