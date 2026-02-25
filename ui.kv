@@ -1,0 +1,33 @@
+<GameScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 20
+        spacing: 20
+
+        # ส่วนบน: กระดานไพ่ผลไม้ (ใช้ GridLayout สมมติไปก่อน)
+        GridLayout:
+            cols: 3
+            spacing: 10
+            # ใส่ปุ่มสมมติแทนไพ่ผลไม้ไปก่อน (นับเป็น Widgets ตามคำสั่งอาจารย์)
+            Button:
+                text: 'ทุเรียน'
+                on_press: root.on_tile_click(self)
+            Button:
+                text: 'มังคุด'
+                on_press: root.on_tile_click(self)
+            Button:
+                text: 'เงาะ'
+                on_press: root.on_tile_click(self)
+
+        # ส่วนล่าง: ช่องเก็บไพ่ 7 ช่อง (ที่กดลงมาแล้วรอจับคู่ 3 ใบ)
+        BoxLayout:
+            size_hint_y: 0.3
+            canvas.before:
+                Color:
+                    rgba: 0.8, 0.8, 0.8, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            Label:
+                text: 'ช่องเก็บไพ่ (รอใส่ UI)'
+                color: 0, 0, 0, 1
