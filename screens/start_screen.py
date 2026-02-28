@@ -79,6 +79,8 @@ class StartScreen(Screen):
 
     def go_to_game(self, instance):
         print(">> กดปุ่มเริ่มเกม!")
+        self.manager.current = 'game'
+
 
     def exit_game(self, instance):
         print(">> กดปุ่มออกแอป!")
