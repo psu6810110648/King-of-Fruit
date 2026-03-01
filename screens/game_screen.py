@@ -14,10 +14,26 @@ class GameScreen(Screen):
         # กองเก็บไพ่ (สูงสุด 7 ใบ)
         self.MAX_SLOTS = 7
         self.slots = []  # เก็บไพ่ที่ถูกคลิก
+    
+    def add_to_slots(self, fruit_name):
+        """เพิ่มไพ่เข้ากองเก็บ"""
+        # เช็คว่ากองเต็มหรือยัง
+        if len(self.slots) >= self.MAX_SLOTS:
+            print("กองเต็มแล้ว! แพ้!")
+            return False
+        
+        # เพิ่มไพ่เข้ากอง
+        self.slots.append(fruit_name)
+        print(f"เพิ่ม {fruit_name} เข้ากอง | กองตอนนี้: {self.slots}")
+        return True
         
     def on_tile_click(self, instance):
-        # ฟังก์ชันทำงานเมื่อกดโดนไพ่ผลไม้ (ตอนนี้ให้ print เทสไปก่อน)
+        # ฟังก์ชันทำงานเมื่อกดโดนไพ่ผลไม้
         print(f"คลิกไพ่: {instance.text}")
+        fruit_name = instance.text
+        
+        # เพิ่มไพ่เข้ากอง
+        self.add_to_slots(fruit_name)
         
     def check_match(self):
         # ฟังก์ชันเช็คว่าผลไม้เหมือนกัน 3 ใบหรือยัง
