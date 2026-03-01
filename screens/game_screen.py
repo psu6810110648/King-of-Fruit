@@ -5,6 +5,16 @@ from kivy.lang import Builder
 Builder.load_file('ui.kv')
 
 class GameScreen(Screen):
+    def __init__(self, **kwargs):
+        super(GameScreen, self).__init__(**kwargs)
+        
+        # รายการผลไม้ที่ใช้ในเกม
+        self.fruit_types = ['ทุเรียน', 'มังคุด', 'เงาะ', 'ลิ้นจี่', 'ลำไย', 'มะม่วง']
+        
+        # กองเก็บไพ่ (สูงสุด 7 ใบ)
+        self.MAX_SLOTS = 7
+        self.slots = []  # เก็บไพ่ที่ถูกคลิก
+        
     def on_tile_click(self, instance):
         # ฟังก์ชันทำงานเมื่อกดโดนไพ่ผลไม้ (ตอนนี้ให้ print เทสไปก่อน)
         print(f"คลิกไพ่: {instance.text}")
