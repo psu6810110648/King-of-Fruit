@@ -23,10 +23,16 @@ class GameScreen(Screen):
         self.slots = []  # เก็บไพ่ที่ถูกคลิก
         
         # ข้อมูลไพ่ทั้งหมดในเกม
-        self.tiles = []  
+        self.tiles = []
+        
+        # คะแนน
+        self.score = 0
+        self.game_over_flag = False  
     
     def on_enter(self):
         """เรียกทุกครั้งที่เข้าหน้านี้ - เริ่มเกมใหม่"""
+        self.score = 0
+        self.game_over_flag = False
         self.generate_tiles()
     
     def generate_tiles(self):
@@ -92,6 +98,7 @@ class GameScreen(Screen):
         # เช็คว่ากองเต็มหรือยัง
         if len(self.slots) >= self.MAX_SLOTS:
             print("กองเต็มแล้ว! แพ้!")
+            self.game_over(is_win=False)
             return False
         
         # เพิ่มไพ่เข้ากอง
@@ -104,6 +111,9 @@ class GameScreen(Screen):
     
     def on_tile_click_new(self, btn_instance, fruit_type):
         """ฟังก์ชันทำงานเมื่อคลิกไพ่ (ใช้กับระบบใหม่)"""
+        if self.game_over_flag:
+            return
+            
         print(f"คลิกไพ่: {fruit_type}")
         
         # เพิ่มไพ่เข้ากอง
@@ -117,6 +127,9 @@ class GameScreen(Screen):
         
         # เช็คว่ามีเซ็ต 3 ใบหรือยัง
         self.check_match()
+        
+        # เช็คว่าชนะหรือยัง
+        self.check_win()
         
     def check_match(self):
         """ฟังก์ชันเช็คว่าผลไม้เหมือนกัน 3 ใบหรือยัง"""
@@ -134,11 +147,35 @@ class GameScreen(Screen):
                     self.slots.remove(fruit)
                 print(f"กองหลังลบ: {self.slots}")
                 
+                # เพิ่มคะแนน
+                self.score += 100
+                
                 # อัพเดท UI
                 self.update_slot_display()
                 return True
         
         return False
+    
+    def check_win(self):
+        """เช็คว่าไพ่หมดจากกระดานหรือยัง (ชนะ)"""
+        # นับไพ่ที่ยังเหลืออยู่ (ไม่ถูกซ่อน)
+        visible_tiles = [t for t in self.tiles if t['widget'].opacity > 0]
+        
+        if len(visible_tiles) == 0:
+            print("🏆 ชนะ! ไพ่หมดจากกระดาน")
+            self.game_over(is_win=True)
+    
+    def game_over(self, is_win):
+        """ฟังก์ชันจบเกม - ไปหน้า result"""
+        self.game_over_flag = True
+        print(f"เกมจบ! {'ชนะ' if is_win else 'แพ้'} | คะแนน: {self.score}")
+        
+        # ส่งข้อมูลไปหน้า result
+        result_screen = self.manager.get_screen('result')
+        result_screen.update_result(is_win=is_win, score=self.score)
+        
+        # เปลี่ยนไปหน้า result
+        self.manager.current = 'result'
     
     def back_to_menu(self):
         # ฟังก์ชันปุ่มกลับหน้าเมนู

@@ -108,7 +108,7 @@ class ResultScreen(Screen):
     # --- Callbacks ---
     def restart_game(self, instance):
         print(">> กดปุ่มเล่นอีกครั้ง")
-        # self.manager.current = 'game'
+        self.manager.current = 'game'
 
     def go_home(self, instance):
         print(">> กดปุ่มกลับหน้าเมนู")
