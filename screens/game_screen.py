@@ -1,10 +1,15 @@
 from kivy.uix.screenmanager import Screen
 from kivy.lang import Builder
+from kivy.properties import StringProperty, ListProperty
 
 # โหลดไฟล์หน้าตา UI
 Builder.load_file('ui.kv')
 
 class GameScreen(Screen):
+    # Properties สำหรับ bind กับ UI
+    slot_display = StringProperty("ช่องว่าง: 7/7")
+    slot_fruits = ListProperty([])
+    
     def __init__(self, **kwargs):
         super(GameScreen, self).__init__(**kwargs)
         
@@ -14,6 +19,12 @@ class GameScreen(Screen):
         # กองเก็บไพ่ (สูงสุด 7 ใบ)
         self.MAX_SLOTS = 7
         self.slots = []  # เก็บไพ่ที่ถูกคลิก
+    
+    def update_slot_display(self):
+        """อัพเดทข้อความแสดงจำนวนช่อง"""
+        remaining = self.MAX_SLOTS - len(self.slots)
+        self.slot_display = f"ช่องว่าง: {remaining}/{self.MAX_SLOTS}"
+        self.slot_fruits = self.slots.copy()
     
     def add_to_slots(self, fruit_name):
         """เพิ่มไพ่เข้ากองเก็บ"""
@@ -25,6 +36,9 @@ class GameScreen(Screen):
         # เพิ่มไพ่เข้ากอง
         self.slots.append(fruit_name)
         print(f"เพิ่ม {fruit_name} เข้ากอง | กองตอนนี้: {self.slots}")
+        
+        # อัพเดท UI
+        self.update_slot_display()
         return True
         
     def on_tile_click(self, instance):
@@ -55,10 +69,13 @@ class GameScreen(Screen):
                 for _ in range(3):
                     self.slots.remove(fruit)
                 print(f"กองหลังลบ: {self.slots}")
+                
+                # อัพเดท UI
+                self.update_slot_display()
                 return True
         
         return False
-        
+    
     def back_to_menu(self):
         # ฟังก์ชันปุ่มกลับหน้าเมนู
         print("กลับเมนูหลัก")
