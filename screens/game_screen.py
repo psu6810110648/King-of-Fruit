@@ -33,11 +33,31 @@ class GameScreen(Screen):
         fruit_name = instance.text
         
         # เพิ่มไพ่เข้ากอง
-        self.add_to_slots(fruit_name)
+        if not self.add_to_slots(fruit_name):
+            # ถ้ากองเต็ม = แพ้
+            return
+        
+        # เช็คว่ามีเซ็ต 3 ใบหรือยัง
+        self.check_match()
         
     def check_match(self):
-        # ฟังก์ชันเช็คว่าผลไม้เหมือนกัน 3 ใบหรือยัง
-        pass
+        """ฟังก์ชันเช็คว่าผลไม้เหมือนกัน 3 ใบหรือยัง"""
+        from collections import Counter
+        
+        # นับจำนวนผลไม้แต่ละชนิดในกอง
+        fruit_count = Counter(self.slots)
+        
+        # เช็คว่ามีผลไม้ไหนครบ 3 ใบหรือไม่
+        for fruit, count in fruit_count.items():
+            if count >= 3:
+                # เจอเซ็ต 3 ใบ! ลบออก 3 ใบ
+                print(f"🎉 เจอเซ็ต! {fruit} x3 - ลบออกจากกอง")
+                for _ in range(3):
+                    self.slots.remove(fruit)
+                print(f"กองหลังลบ: {self.slots}")
+                return True
+        
+        return False
         
     def back_to_menu(self):
         # ฟังก์ชันปุ่มกลับหน้าเมนู
