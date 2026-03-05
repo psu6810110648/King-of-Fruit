@@ -41,7 +41,7 @@ class TimeBar(Widget):
         elif percent > 0.2: self.fg_color.rgba = (1, 0.8, 0, 1)
         else: self.fg_color.rgba = (1, 0.2, 0.2, 1)
 
-# --- 2. คลาสปุ่มไพ่ (อัปเกรด: กันการกดทะลุ 🛡️) ---
+# --- 2. คลาสปุ่มไพ่ (กันทะลุ + Disable) ---
 class TileButton(Button):
     def __init__(self, fruit_source, **kwargs):
         super().__init__(**kwargs)
@@ -101,7 +101,6 @@ class TileButton(Button):
 
     def set_blocked(self, blocked):
         self.is_blocked = blocked
-        # self.disabled = blocked  <-- เอาออก! เราจะคุมเองใน on_touch_down
         
         if blocked:
             self.dim_color.rgba = (0, 0, 0, 0.5) 
@@ -205,17 +204,25 @@ class GameScreen(Screen):
             Color(0, 0, 0, 0.7)
             Rectangle(pos=(0,0), size=(2000, 2000))
 
-        menu_box = BoxLayout(orientation='vertical', spacing=20, size_hint=(None, None), size=(300, 250),
+        # ปรับขนาดกล่องเมนูให้ใหญ่ขึ้นนิดนึง เพื่อใส่ปุ่มเพิ่ม
+        menu_box = BoxLayout(orientation='vertical', spacing=15, size_hint=(None, None), size=(320, 320),
                              pos_hint={'center_x': 0.5, 'center_y': 0.5})
         
         lbl_paused = Label(text="PAUSED", font_size='40sp', bold=True, color=(1, 1, 1, 1))
         menu_box.add_widget(lbl_paused)
 
-        btn_resume = Button(text="RESUME", font_size='20sp', background_color=(0.2, 0.8, 0.2, 1))
+        # ปุ่ม Resume (เล่นต่อ)
+        btn_resume = Button(text="RESUME", font_size='22sp', background_color=(0.2, 0.8, 0.2, 1))
         btn_resume.bind(on_press=self.toggle_pause)
         menu_box.add_widget(btn_resume)
 
-        btn_exit = Button(text="EXIT TO MENU", font_size='20sp', background_color=(0.8, 0.2, 0.2, 1))
+        # ✅ ปุ่ม Restart (เริ่มใหม่)
+        btn_restart = Button(text="RESTART", font_size='22sp', background_color=(0.2, 0.6, 1, 1)) # สีฟ้า
+        btn_restart.bind(on_press=self.restart_game)
+        menu_box.add_widget(btn_restart)
+
+        # ปุ่ม Exit (ออกไปหน้าเมนู)
+        btn_exit = Button(text="EXIT TO MENU", font_size='22sp', background_color=(0.8, 0.2, 0.2, 1))
         btn_exit.bind(on_press=self.go_to_menu)
         menu_box.add_widget(btn_exit)
 
@@ -228,6 +235,18 @@ class GameScreen(Screen):
             self.layout.add_widget(self.pause_menu)
         else:
             self.layout.remove_widget(self.pause_menu)
+
+    # ✅ ฟังก์ชันเริ่มเกมใหม่ (Restart)
+    def restart_game(self, instance):
+        # ปิดเมนู Pause
+        if self.pause_menu.parent: 
+            self.layout.remove_widget(self.pause_menu)
+        
+        # รีเซ็ตสถานะ Pause
+        self.is_paused = False
+        
+        # เริ่มด่านปัจจุบันใหม่อีกรอบ
+        self.start_level(self.current_level)
 
     def go_to_menu(self, instance):
         if self.pause_menu.parent: self.layout.remove_widget(self.pause_menu)
