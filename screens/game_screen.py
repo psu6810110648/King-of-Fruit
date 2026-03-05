@@ -10,9 +10,11 @@ from kivy.graphics import Color, RoundedRectangle, Rectangle, Line
 import random
 from kivy.core.audio import SoundLoader
 from kivy.clock import Clock
-from kivy.animation import Animation
 
-# --- 1. คลาสหลอดเวลา (เหมือนเดิม) ---
+# ✅ ชื่อฟอนต์น่ารัก
+CUSTOM_FONT = 'assets/fonts/cute.ttf' 
+
+# --- 1. คลาสหลอดเวลา ---
 class TimeBar(Widget):
     def __init__(self, max_value=60, **kwargs):
         super().__init__(**kwargs)
@@ -39,7 +41,7 @@ class TimeBar(Widget):
         elif percent > 0.2: self.fg_color.rgba = (1, 0.8, 0, 1)
         else: self.fg_color.rgba = (1, 0.2, 0.2, 1)
 
-# --- 2. คลาสปุ่มไพ่ (เหมือนเดิม) ---
+# --- 2. คลาสปุ่มไพ่ ---
 class TileButton(Button):
     def __init__(self, fruit_source, **kwargs):
         super().__init__(**kwargs)
@@ -67,7 +69,7 @@ class TileButton(Button):
         self.fruit_rect.pos = (self.x+pad, self.y+pad)
         self.fruit_rect.size = (self.width-pad*2, self.height-pad*2)
 
-# --- 3. คลาสช่องด้านล่าง (เหมือนเดิม) ---
+# --- 3. คลาสช่องด้านล่าง ---
 class EmptySlot(Widget):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -98,13 +100,13 @@ class FilledSlot(Widget):
         self.img.pos = (self.x + pad, self.y + pad)
         self.img.size = (self.width - pad*2, self.height - pad*2)
 
-# --- 4. หน้าจอเกมหลัก (รองรับหลายด่าน) ---
+# --- 4. หน้าจอเกมหลัก (Final Fix: Sticker Layer Order) ---
 class GameScreen(Screen):
     def __init__(self, **kwargs):
         super(GameScreen, self).__init__(**kwargs)
         self.fruit_types = ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10']
         self.MAX_SLOTS = 7
-        self.current_level = 1 # เก็บด่านปัจจุบัน
+        self.current_level = 1 
         self.slots = []
         self.tiles = []
         self.score = 0
@@ -117,19 +119,19 @@ class GameScreen(Screen):
         self.bg = Image(source='assets/images/bg.png', allow_stretch=True, keep_ratio=False)
         self.layout.add_widget(self.bg)
         
-        # Game Board (Grid จะถูกตั้งค่าใหม่ตอนเริ่มด่าน)
+        # Game Board
         self.game_board = GridLayout(spacing=10, padding=20,
                                      size_hint=(0.85, 0.6),
                                      pos_hint={'center_x': 0.45, 'center_y': 0.55})
         self.layout.add_widget(self.game_board)
         
-        # Grid สำหรับช่องด้านล่าง
+        # Slot Grid
         self.slot_grid = GridLayout(rows=1, cols=7, spacing=10, padding=10,
                                     size_hint=(None, None), size=(650, 100),
                                     pos_hint={'center_x': 0.45, 'y': 0.025})
         self.layout.add_widget(self.slot_grid)
 
-        # Time Bar & Label
+        # Time Bar
         self.time_bar = TimeBar(max_value=60, size_hint=(None, None), size=(30, 400),
                                 pos_hint={'right': 0.96, 'center_y': 0.5})
         self.layout.add_widget(self.time_bar)
@@ -141,17 +143,16 @@ class GameScreen(Screen):
         )
         self.layout.add_widget(self.lbl_time)
 
-        # Level Label (บอกว่าอยู่ด่านไหน)
+        # Level Label
         self.lbl_level = Label(
-            text="LEVEL 1", font_size='30sp', bold=True,
+            text="LEVEL 1", font_size='24sp', bold=True,
             color=(1, 1, 0, 1), outline_color=(0, 0, 0, 1), outline_width=2,
-            # 👇 แก้ตรงนี้: กำหนดขนาดกล่อง (สำคัญ!) และย้ายไปไว้ข้างบน
-            size_hint=(None, None), size=(200, 50),
-            pos_hint={'center_x': 0.5, 'top': 0.96} 
+            size_hint=(None, None), size=(150, 50),
+            pos_hint={'center_x': 0.945, 'top': 0.98} 
         )
         self.layout.add_widget(self.lbl_level)
 
-        # ปุ่ม Pause
+        # Pause Button
         self.btn_pause = Button(
             text="II", font_size='24sp', bold=True,
             background_color=(1, 0.6, 0, 1),
@@ -195,16 +196,13 @@ class GameScreen(Screen):
             self.layout.remove_widget(self.pause_menu)
 
     def go_to_menu(self, instance):
-        self.layout.remove_widget(self.pause_menu)
+        if self.pause_menu.parent: self.layout.remove_widget(self.pause_menu)
         self.is_paused = False
         self.manager.current = 'start'
 
     def on_enter(self):
-        # 👇 เช็คว่าต้องเริ่มด่านไหน
-        # ถ้าไม่มีการส่งค่ามา ให้เริ่มด่าน 1
         if not hasattr(self, 'target_level'):
             self.target_level = 1
-        
         self.start_level(self.target_level)
 
     def start_level(self, level):
@@ -212,31 +210,34 @@ class GameScreen(Screen):
         self.score = 0
         self.game_over_flag = False
         self.is_paused = False
-        if self.pause_menu.parent: self.layout.remove_widget(self.pause_menu)
+        
+        if hasattr(self, 'result_popup') and self.result_popup.parent:
+            self.layout.remove_widget(self.result_popup)
+        if self.pause_menu.parent: 
+            self.layout.remove_widget(self.pause_menu)
         
         self.lbl_level.text = f"LEVEL {self.current_level}"
 
-        # --- ⚙️ ตั้งค่าความยากแต่ละด่าน ---
         if self.current_level == 1:
             self.GAME_TIME = 60
-            self.cols_num = 7  # กระดาน 7 แถว (21 ใบ)
-            self.bg.source = 'assets/images/bg.png' # พื้นหลังด่าน 1
+            self.cols_num = 7 
+            self.bg.source = 'assets/images/bg.png'
         elif self.current_level == 2:
-            self.GAME_TIME = 50 # เวลาลดลง!
-            self.cols_num = 8   # กระดานกว้างขึ้นเป็น 8 แถว (24 ใบ)
-            self.bg.source = 'assets/images/bg2.png' # พื้นหลังด่าน 2 ⚠️ อย่าลืมหาไฟล์นี้นะ!
-        # -------------------------------
-
+            self.GAME_TIME = 50 
+            self.cols_num = 8
+            self.bg.source = 'assets/images/bg2.png'
+        
         self.time_left = self.GAME_TIME
         self.lbl_time.text = f"Time\n{self.time_left}"
         self.time_bar.max_value = self.GAME_TIME
         self.time_bar.update_bar(self.time_left)
         
-        # ตั้งค่า Grid Layout ใหม่ตามความยาก
         self.game_board.cols = self.cols_num
         self.game_board.clear_widgets()
         
         self.generate_tiles()
+        
+        if hasattr(self, 'timer_event'): self.timer_event.cancel()
         self.timer_event = Clock.schedule_interval(self.update_time, 1)
 
     def update_time(self, dt):
@@ -252,22 +253,15 @@ class GameScreen(Screen):
         self.slots = []
         self.update_visual_slots() 
         
-        # คำนวณจำนวนไพ่ตามขนาดกระดาน
-        # ด่าน 1: 7x3 = 21 ใบ
-        # ด่าน 2: 8x3 = 24 ใบ
         total_tiles = self.cols_num * 3 
-        
         tile_list = []
-        # สุ่มผลไม้ให้ครบจำนวน (ต้องหาร 3 ลงตัวเสมอ)
         current_fruit_idx = 0
         while len(tile_list) < total_tiles:
             fruit = self.fruit_types[current_fruit_idx % len(self.fruit_types)]
-            for _ in range(3): # เพิ่มทีละ 3 ใบ (1 ชุด)
-                tile_list.append(fruit)
+            for _ in range(3): tile_list.append(fruit)
             current_fruit_idx += 1
             
         random.shuffle(tile_list)
-        
         for fruit in tile_list:
             tile_btn = TileButton(fruit_source=f'assets/images/picgame/{fruit}.png', 
                                   size_hint=(None, None), size=(80, 80))
@@ -322,13 +316,128 @@ class GameScreen(Screen):
             self.game_over(is_win=True)
 
     def game_over(self, is_win):
+        if self.game_over_flag: return 
         self.game_over_flag = True
         if hasattr(self, 'timer_event'): self.timer_event.cancel()
+        self.show_popup(is_win)
+
+    # --- ✨ Popup System (Cute & Correct Layer Order) ✨ ---
+    def show_popup(self, is_win):
+        popup = FloatLayout()
+        self.result_popup = popup
         
-        result_screen = self.manager.get_screen('result')
-        # ส่งข้อมูลไปด้วยว่าตอนนี้อยู่ Level ไหน
-        result_screen.update_result(is_win=is_win, score=self.score, current_level=self.current_level)
-        self.manager.current = 'result'
+        # 1. ฉากหลัง Dim
+        with popup.canvas.before:
+            Color(0, 0, 0, 0.6)
+            popup.bg_rect = Rectangle(pos=(0, 0), size=(2000, 2000))
+            
+        def update_dim_bg(instance, value):
+            if hasattr(instance, 'bg_rect'):
+                instance.bg_rect.pos = instance.pos
+                instance.bg_rect.size = instance.size
+        popup.bind(pos=update_dim_bg, size=update_dim_bg)
+
+        # Container
+        popup_container = FloatLayout(size_hint=(None, None), size=(450, 420),
+                                      pos_hint={'center_x': 0.5, 'center_y': 0.5})
+
+        # --- 2. สร้างกล่องเนื้อหาหลัก (แต่ยังไม่ Add ลง Container) ---
+        content_box = BoxLayout(orientation='vertical', spacing=15, padding=30,
+                                size_hint=(1, 1), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        
+        with content_box.canvas.before:
+            Color(1, 1, 1, 1)
+            content_box.bg_rect = RoundedRectangle(pos=content_box.pos, size=content_box.size, radius=[35]) 
+            Color(1, 0.85, 0.4, 1) # ขอบส้มทอง
+            content_box.border_line = Line(rounded_rectangle=(content_box.x, content_box.y, content_box.width, content_box.height, 35), width=5)
+            
+        def update_content_bg(instance, value):
+            if hasattr(instance, 'bg_rect'):
+                instance.bg_rect.pos = instance.pos
+                instance.bg_rect.size = instance.size
+                instance.border_line.rounded_rectangle = (instance.x, instance.y, instance.width, instance.height, 35)
+        content_box.bind(pos=update_content_bg, size=update_content_bg)
+
+        # ใส่ข้อความ ปุ่ม ต่างๆ ลงใน Content Box
+        title_text = "YOU WIN! 🎉" if is_win else "GAME OVER 💀"
+        title_color = (0, 0.7, 0, 1) if is_win else (0.9, 0.3, 0.3, 1)
+        lbl_title = Label(text=title_text, font_size='40sp', bold=True, color=title_color, font_name=CUSTOM_FONT)
+        content_box.add_widget(lbl_title)
+
+        lbl_score = Label(text=f"Score: {self.score}", font_size='32sp', bold=True, color=(0.4, 0.4, 0.4, 1), font_name=CUSTOM_FONT)
+        content_box.add_widget(lbl_score)
+
+        btn_action = Button(font_size='28sp', bold=True, size_hint=(1, None), height=75,
+                            background_normal='', background_color=(0, 0, 0, 0), font_name=CUSTOM_FONT)
+        if is_win:
+            if self.current_level == 1:
+                btn_action.text = "NEXT LEVEL >>"
+                btn_action.bind(on_press=self.action_next_level)
+                btn_color = (0.3, 0.8, 0.3, 1) 
+            else:
+                btn_action.text = "PLAY AGAIN"
+                btn_action.bind(on_press=self.action_restart)
+                btn_color = (0.3, 0.7, 1, 1)
+        else:
+            btn_action.text = "TRY AGAIN"
+            btn_action.bind(on_press=self.action_restart)
+            btn_color = (1, 0.5, 0.5, 1)
+
+        with btn_action.canvas.before:
+            Color(*btn_color)
+            btn_action.bg_rect = RoundedRectangle(pos=btn_action.pos, size=btn_action.size, radius=[25])
+        
+        def update_btn(inst, val): 
+            if hasattr(inst, 'bg_rect'):
+                inst.bg_rect.pos = inst.pos
+                inst.bg_rect.size = inst.size
+        btn_action.bind(pos=update_btn, size=update_btn)
+        content_box.add_widget(btn_action)
+
+        btn_home = Button(text="HOME", font_size='22sp', bold=True, 
+                          color=(0.6, 0.6, 0.6, 1), 
+                          background_normal='', background_color=(0,0,0,0),
+                          size_hint=(1, None), height=45, font_name=CUSTOM_FONT)
+        btn_home.bind(on_press=self.go_to_menu)
+        content_box.add_widget(btn_home)
+
+        # -----------------------------------------------
+        # 🔑 จุดสำคัญอยู่ตรงนี้ครับ! (สลับลำดับการ Add)
+        # -----------------------------------------------
+        
+        # 1. ใส่ "กล่องขาว" ลงไปก่อน (ให้มันอยู่ข้างหลัง)
+        popup_container.add_widget(content_box)
+
+        # 2. ค่อยใส่ "สติกเกอร์" ตามลงไปทีหลัง (มันจะทับอยู่ข้างบน)
+        deco_fruits = random.sample(self.fruit_types, 4)
+        
+        deco1 = Image(source=f'assets/images/picgame/{deco_fruits[0]}.png', size_hint=(None, None), size=(80, 80), pos_hint={'x': -0.08, 'top': 1.08})
+        popup_container.add_widget(deco1) # 👈 สติกเกอร์อยู่บน
+
+        deco2 = Image(source=f'assets/images/picgame/{deco_fruits[1]}.png', size_hint=(None, None), size=(80, 80), pos_hint={'right': 1.08, 'top': 1.08})
+        popup_container.add_widget(deco2) # 👈 สติกเกอร์อยู่บน
+        
+        deco3 = Image(source=f'assets/images/picgame/{deco_fruits[2]}.png', size_hint=(None, None), size=(70, 70), pos_hint={'x': -0.06, 'y': -0.06})
+        popup_container.add_widget(deco3) # 👈 สติกเกอร์อยู่บน
+
+        deco4 = Image(source=f'assets/images/picgame/{deco_fruits[3]}.png', size_hint=(None, None), size=(90, 90), pos_hint={'right': 1.06, 'y': -0.04})
+        popup_container.add_widget(deco4) # 👈 สติกเกอร์อยู่บน
+
+        popup.add_widget(popup_container)
+
+        if popup.parent is None:
+            self.layout.add_widget(popup)
+
+    # --- Action Buttons ---
+    def action_next_level(self, instance):
+        if hasattr(self, 'result_popup') and self.result_popup.parent:
+            self.layout.remove_widget(self.result_popup)
+        self.start_level(self.current_level + 1)
+
+    def action_restart(self, instance):
+        if hasattr(self, 'result_popup') and self.result_popup.parent:
+            self.layout.remove_widget(self.result_popup)
+        self.start_level(1)
 
     def on_leave(self):
         if hasattr(self, 'timer_event'): self.timer_event.cancel()

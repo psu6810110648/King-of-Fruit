@@ -13,8 +13,6 @@ class KingOfFruitApp(App):
         sm.add_widget(ResultScreen(name='result'))
         sm.current = 'start'
         
-        # --- 🎵 ส่วนเล่นเพลงประกอบ (BGM) ---
-        # (เช็ค path ให้ตรงกับที่ย้ายโฟลเดอร์นะ)
         self.bgm = SoundLoader.load('assets/sounds/bgm.mp3')
         if self.bgm:
             self.bgm.loop = True  # สั่งให้วนซ้ำ
