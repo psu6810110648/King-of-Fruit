@@ -260,19 +260,31 @@ class GameScreen(Screen):
     def on_tile_click_new(self, btn_instance, fruit_type):
         if self.game_over_flag: return
         
-        # 👇 ถ้าเกมหยุดอยู่ ห้ามกดผลไม้!
-        if self.is_paused: return 
+        # เช็คว่าเกมหยุดอยู่ไหม (ถ้ามีระบบ Pause)
+        if hasattr(self, 'is_paused') and self.is_paused: return 
 
         self.play_sound('click.wav')
+        
+        # ป้องกัน error: ถ้าเต็มแล้วห้ามกดเพิ่ม
         if len(self.slots) >= self.MAX_SLOTS: return
 
+        # เอาไพ่ลงช่อง
         self.slots.append(fruit_type)
         btn_instance.disabled = True
         btn_instance.opacity = 0
         
         self.update_visual_slots()
         
-        self.check_match()
+        # 1. ลองจับคู่ดูก่อน (เผื่อรอด)
+        self.check_match() 
+        
+        # 2. 👇 เช็คแพ้ตรงนี้ครับ! (หัวใจสำคัญ)
+        # ถ้าจับคู่แล้ว ช่องยังเต็มเอี๊ยด (ครบ 7) แปลว่าจบเห่
+        if len(self.slots) >= self.MAX_SLOTS:
+            self.game_over(is_win=False)
+            return # จบฟังก์ชันเลย ไม่ต้องเช็คชนะต่อ
+
+        # 3. ถ้ายังไม่แพ้ ค่อยเช็คว่าชนะหรือยัง (ไพ่หมดกระดานไหม)
         self.check_win()
 
     def update_visual_slots(self):
