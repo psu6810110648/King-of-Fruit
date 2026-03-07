@@ -91,6 +91,24 @@ class StartScreen(Screen):
         self.btn_exit.bind(on_press=self.exit_game)
         self.layout.add_widget(self.btn_exit)
 
+        # --- 5. ⚙️ ปุ่ม Settings ---
+        self.btn_settings = Button(
+            text="SETTINGS",
+            font_size='20sp',
+            font_name=CUSTOM_FONT,
+            bold=True,
+            background_normal='', background_color=(0,0,0,0),
+            size_hint=(None, None), size=(150, 50),
+            pos_hint={'x': 0.05, 'y': 0.05}
+        )
+        with self.btn_settings.canvas.before:
+            Color(0.3, 0.3, 0.7, 1)  # สีม่วงน้ำเงิน
+            self.settings_bg = RoundedRectangle(pos=self.btn_settings.pos, size=self.btn_settings.size, radius=[15])
+
+        self.btn_settings.bind(pos=self.update_settings_graphics, size=self.update_settings_graphics)
+        self.btn_settings.bind(on_press=self.open_settings)
+        self.layout.add_widget(self.btn_settings)
+
         self.add_widget(self.layout)
 
     # --- ✨ Animation Zone ---
@@ -116,9 +134,17 @@ class StartScreen(Screen):
         self.exit_bg.pos = self.btn_exit.pos
         self.exit_bg.size = self.btn_exit.size
 
+    def update_settings_graphics(self, *args):
+        self.settings_bg.pos = self.btn_settings.pos
+        self.settings_bg.size = self.btn_settings.size
+
     def start_game(self, instance):
         Animation.cancel_all(self.bg)
         self.manager.current = 'game'
+
+    def open_settings(self, instance):
+        Animation.cancel_all(self.bg)
+        self.manager.current = 'settings'
 
     def exit_game(self, instance):
         sys.exit()

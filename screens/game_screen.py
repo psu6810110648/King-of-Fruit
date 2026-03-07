@@ -527,9 +527,14 @@ class GameScreen(Screen):
 
     def play_sound(self, sound_file):
         try:
+            from kivy.app import App
+            app = App.get_running_app()
+            # ถ้า Mute อยู่ ไม่เล่นเสียง
+            if app.is_muted:
+                return
             sound = SoundLoader.load(f'assets/sounds/{sound_file}')
             if sound: 
-                sound.volume = 1.0
+                sound.volume = app.sfx_volume
                 sound.play()
         except:
             pass
