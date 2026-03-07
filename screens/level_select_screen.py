@@ -11,8 +11,11 @@ CUSTOM_FONT = 'assets/fonts/cute.ttf'
 
 # --- ข้อมูลด่าน ---
 LEVEL_DATA = [
-    {'level': 1, 'name': 'ทุ่งผลไม้', 'desc': '7 ชุด / 60 วินาที'},
-    {'level': 2, 'name': 'ป่าลึกลับ', 'desc': '12 ชุด / 80 วินาที'},
+    {'level': 1, 'name': 'ทุ่งผลไม้',   'desc': '7 ชุด / 60 วินาที'},
+    {'level': 2, 'name': 'ป่าลึกลับ',   'desc': '12 ชุด / 80 วินาที'},
+    {'level': 3, 'name': 'ดงผลไม้',     'desc': '15 ชุด / 70 วินาที'},
+    {'level': 4, 'name': 'หุบเขาซ้อน',  'desc': '18 ชุด / 75 วินาที'},
+    {'level': 5, 'name': 'นรกผลไม้',    'desc': '20 ชุด / 60 วินาที'},
 ]
 
 
@@ -135,17 +138,26 @@ class LevelSelectScreen(Screen):
         self.level_buttons = []
         total = len(LEVEL_DATA)
         for i, ldata in enumerate(LEVEL_DATA):
-            # จัดตำแหน่งกระจายตรงกลาง
-            spacing = 0.3
-            start_x = 0.5 - (total - 1) * spacing / 2
-            cx = start_x + i * spacing
+            # จัดเป็น 2 แถว: แถวบน 3 ปุ่ม, แถวล่าง 2 ปุ่ม
+            if i < 3:
+                row_count = 3
+                row_idx = i
+                cy = 0.6
+            else:
+                row_count = 2
+                row_idx = i - 3
+                cy = 0.35
+            
+            spacing = 0.22
+            start_x = 0.5 - (row_count - 1) * spacing / 2
+            cx = start_x + row_idx * spacing
 
             lb = LevelButton(
                 level_info=ldata,
                 is_unlocked=(ldata['level'] <= 1),  # ค่าเริ่มต้น unlock แค่ด่าน 1
                 on_select_cb=self.select_level,
-                size_hint=(None, None), size=(140, 140),
-                pos_hint={'center_x': cx, 'center_y': 0.55}
+                size_hint=(None, None), size=(120, 120),
+                pos_hint={'center_x': cx, 'center_y': cy}
             )
             self.layout.add_widget(lb)
             self.level_buttons.append(lb)

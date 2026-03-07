@@ -271,14 +271,18 @@ class GameScreen(Screen):
         
         self.lbl_level.text = f"LEVEL {self.current_level}"
 
-        if self.current_level == 1:
-            self.GAME_TIME = 60
-            self.num_sets = 7 
-            self.bg.source = 'assets/images/bg.png'
-        elif self.current_level == 2:
-            self.GAME_TIME = 80
-            self.num_sets = 12 
-            self.bg.source = 'assets/images/bg2.png'
+        # --- Level Configs ---
+        level_configs = {
+            1: {'time': 60,  'sets': 7,  'bg': 'assets/images/bg.png'},
+            2: {'time': 80,  'sets': 12, 'bg': 'assets/images/bg2.png'},
+            3: {'time': 70,  'sets': 15, 'bg': 'assets/images/bg3.png'},
+            4: {'time': 75,  'sets': 18, 'bg': 'assets/images/bg4.png'},
+            5: {'time': 60,  'sets': 20, 'bg': 'assets/images/bg4.png'},
+        }
+        config = level_configs.get(self.current_level, level_configs[5])
+        self.GAME_TIME = config['time']
+        self.num_sets = config['sets']
+        self.bg.source = config['bg']
         
         self.time_left = self.GAME_TIME
         self.lbl_time.text = f"Time\n{self.time_left}"
@@ -317,6 +321,7 @@ class GameScreen(Screen):
         card_w, card_h = 75, 75
         
         if self.current_level == 1:
+            # --- Level 1: Grid เรียงเป็นตาราง ---
             cols = 7
             start_x_hint = 0.05
             start_y_hint = 0.7
@@ -330,10 +335,62 @@ class GameScreen(Screen):
                 self.create_tile(fruit, pos_x, pos_y, card_w, card_h)
 
         elif self.current_level == 2:
+            # --- Level 2: สุ่มตำแหน่ง ---
             for i, fruit in enumerate(tile_list):
                 rand_x = random.uniform(0.1, 0.8)
                 rand_y = random.uniform(0.1, 0.8)
                 self.create_tile(fruit, rand_x, rand_y, card_w, card_h)
+
+        elif self.current_level == 3:
+            # --- Level 3: Grid แน่นขึ้น ---
+            cols = 9
+            start_x_hint = 0.02
+            start_y_hint = 0.75
+            gap_x = 0.105
+            gap_y = 0.17
+            for i, fruit in enumerate(tile_list):
+                row = i // cols
+                col = i % cols
+                pos_x = start_x_hint + (col * gap_x)
+                pos_y = start_y_hint - (row * gap_y)
+                self.create_tile(fruit, pos_x, pos_y, card_w, card_h)
+
+        elif self.current_level == 4:
+            # --- Level 4: ซ้อนกัน หลายชั้น (3 ชั้น) ---
+            layer_count = 3
+            tiles_per_layer = len(tile_list) // layer_count
+            remainder = len(tile_list) % layer_count
+            idx = 0
+            for layer in range(layer_count):
+                n = tiles_per_layer + (1 if layer < remainder else 0)
+                cols = 6
+                offset = layer * 0.03  # แต่ละชั้นเลื่อนนิดหน่อยให้เห็นว่าซ้อน
+                start_x = 0.05 + offset
+                start_y = 0.7 - offset
+                gap_x = 0.14
+                gap_y = 0.18
+                for j in range(n):
+                    row = j // cols
+                    col = j % cols
+                    pos_x = start_x + (col * gap_x)
+                    pos_y = start_y - (row * gap_y)
+                    self.create_tile(tile_list[idx], pos_x, pos_y, card_w, card_h)
+                    idx += 1
+
+        elif self.current_level >= 5:
+            # --- Level 5: สุ่ม + ซ้อนหนัก (เวลาน้อย) ---
+            layer_count = 4
+            tiles_per_layer = len(tile_list) // layer_count
+            remainder = len(tile_list) % layer_count
+            idx = 0
+            for layer in range(layer_count):
+                n = tiles_per_layer + (1 if layer < remainder else 0)
+                offset = layer * 0.02
+                for j in range(n):
+                    rand_x = random.uniform(0.05 + offset, 0.8 - offset)
+                    rand_y = random.uniform(0.1 + offset, 0.8 - offset)
+                    self.create_tile(tile_list[idx], rand_x, rand_y, card_w, card_h)
+                    idx += 1
 
         Clock.schedule_once(self.delayed_check_blocked, 0.1)
 
@@ -471,15 +528,16 @@ class GameScreen(Screen):
 
         btn_action = Button(font_size='28sp', bold=True, size_hint=(1, None), height=75,
                             background_normal='', background_color=(0, 0, 0, 0), font_name=CUSTOM_FONT)
+        MAX_LEVEL = 5
         if is_win:
-            if self.current_level == 1:
+            if self.current_level < MAX_LEVEL:
                 btn_action.text = "NEXT LEVEL >>"
                 btn_action.bind(on_press=self.action_next_level)
                 btn_color = (0.3, 0.8, 0.3, 1) 
             else:
-                btn_action.text = "PLAY AGAIN"
+                btn_action.text = "YOU ARE THE KING!"
                 btn_action.bind(on_press=self.action_restart)
-                btn_color = (0.3, 0.7, 1, 1)
+                btn_color = (1, 0.8, 0.2, 1)
         else:
             btn_action.text = "TRY AGAIN"
             btn_action.bind(on_press=self.action_restart)
