@@ -140,7 +140,7 @@ class StartScreen(Screen):
 
     def start_game(self, instance):
         Animation.cancel_all(self.bg)
-        self.manager.current = 'game'
+        self.manager.current = 'level_select'
 
     def open_settings(self, instance):
         Animation.cancel_all(self.bg)

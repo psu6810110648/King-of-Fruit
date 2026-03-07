@@ -5,6 +5,7 @@ from screens.start_screen import StartScreen
 from screens.result_screen import ResultScreen
 from screens.game_screen import GameScreen
 from screens.settings_screen import SettingsScreen
+from screens.level_select_screen import LevelSelectScreen
 
 class KingOfFruitApp(App):
     def build(self):
@@ -12,12 +13,14 @@ class KingOfFruitApp(App):
         self.bgm_volume = 0.5
         self.sfx_volume = 1.0
         self.is_muted = False
+        self.unlocked_level = 1  # เริ่มต้นปลดล็อคแค่ด่าน 1
 
         sm = ScreenManager()
         sm.add_widget(StartScreen(name='start'))
         sm.add_widget(GameScreen(name='game'))
         sm.add_widget(ResultScreen(name='result'))
         sm.add_widget(SettingsScreen(name='settings'))
+        sm.add_widget(LevelSelectScreen(name='level_select'))
         sm.current = 'start'
         
         self.bgm = SoundLoader.load('assets/sounds/bgm.mp3')

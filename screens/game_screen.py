@@ -251,7 +251,7 @@ class GameScreen(Screen):
     def go_to_menu(self, instance):
         if self.pause_menu.parent: self.layout.remove_widget(self.pause_menu)
         self.is_paused = False
-        self.manager.current = 'start'
+        self.manager.current = 'level_select'
 
     def on_enter(self):
         if not hasattr(self, 'target_level'):
@@ -417,6 +417,15 @@ class GameScreen(Screen):
         if self.game_over_flag: return 
         self.game_over_flag = True
         if hasattr(self, 'timer_event'): self.timer_event.cancel()
+        
+        # ✅ ปลดล็อคด่านถัดไปเมื่อชนะ
+        if is_win:
+            from kivy.app import App
+            app = App.get_running_app()
+            next_level = self.current_level + 1
+            if next_level > app.unlocked_level:
+                app.unlocked_level = next_level
+        
         self.show_popup(is_win)
 
     def show_popup(self, is_win):
