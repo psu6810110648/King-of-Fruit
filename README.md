@@ -5,6 +5,9 @@
   <img src="assets/images/bging.png" alt="King of Fruit Main Screen" width="700"/>
   <br/><i>หน้าจอหลัก (Start Screen)</i><br/><br/>
   
+  <img src="assets/images/bg.png" alt="Settings Screen" width="400"/>
+  <br/><i>หน้าจอการตั้งค่า (Settings Screen)</i><br/><br/>
+  
   <img src="assets/images/bg1.png" alt="Gameplay Level 1" width="400"/>
   <img src="assets/images/bg2.png" alt="Gameplay Level 2" width="400"/>
   <br/><i>บรรยากาศการเล่นเกมเพลย์ (Level 1 แบบ Grid แบบง่ายดาย และ Level 2 แบบซ้อนเลเยอร์ทับกัน)</i>
