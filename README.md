@@ -3,7 +3,6 @@
 
 <div align="center">
   <img src="assets/images/bg1.png" alt="King-of-Fruit Gameplay" width="600"/>
-  <br/><i>ภาพบรรยากาศภายในเกม King-of-Fruit</i>
 </div>
 
 ## สมาชิกในกลุ่ม
