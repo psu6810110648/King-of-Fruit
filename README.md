@@ -4,12 +4,9 @@
 <div align="center">
   <img src="assets/images/bging.png" alt="King of Fruit Main Screen" width="700"/>
   <br/><i>หน้าจอหลัก (Start Screen)</i><br/><br/>
-  
-  <img src="assets/images/bg.png" alt="Settings Screen" width="400"/>
   <br/><i>หน้าจอการตั้งค่า (Settings Screen)</i><br/><br/>
   
   <img src="assets/images/bg1.png" alt="Gameplay Level 1" width="400"/>
-  <img src="assets/images/bg2.png" alt="Gameplay Level 2" width="400"/>
   <br/><i>บรรยากาศการเล่นเกมเพลย์ (Level 1 แบบ Grid แบบง่ายดาย และ Level 2 แบบซ้อนเลเยอร์ทับกัน)</i>
 </div>
 
@@ -77,7 +74,7 @@ King-of-Fruit/
 
 2. **`screens/`** (ส่วนหน้าจอผู้ใช้งาน)
    - **`start_screen.py`**: ต้อนรับผู้เล่น มีปุ่มเริ่มเกม, เลือกด่าน, และปุ่มตั้งค่า
-   - **`level_select_screen.py`**: แสดงรายการ Level 1-5 พร้อมระบบสัญลักษณ์แม่กุญแจ หากยังไม่ปลดล็อคด่านถัดไปจะไม่สามารถเข้าเล่นได้
+   - **`level_select_screen.py`**: แสดงรายการ Level 1-10 พร้อมระบบสัญลักษณ์แม่กุญแจ หากยังไม่ปลดล็อคด่านถัดไปจะไม่สามารถเข้าเล่นได้
    - **`game_screen.py`**: แกนหลักของเกมเพลย์ สร้าง grid การ์ด วางการ์ดแบบสุ่ม จับเวลา ควบคุมการกดการ์ด (จับคู่ทีละ 3 ใบ) ตรวจสอบเงื่อนไขการชนะ/แพ้
    - **`result_screen.py`**: แสดงผลการเล่นหลังหมดเวลา หรือคู่ครบแล้ว ประกอบด้วยคะแนน (ดาว 1-3 ดวง) และสรุปความแม่นยำ
    - **`settings_screen.py`**: ให้ผู้เล่นปรับความดัง BGM/SFX และเปิด-ปิดเสียงทั้งหมด
