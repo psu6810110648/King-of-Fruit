@@ -71,6 +71,18 @@ class LevelButton(FloatLayout):
         # --- ทำให้ตารางเลื่อนลงได้ (Commit 11) ---
         self.grid.bind(minimum_height=self.grid.setter('height'))
 
+        # --- วางปุ่มลงในตาราง (Commit 12) ---
+        self.level_buttons = []
+        for ldata in LEVEL_DATA:
+            lb = LevelButton(
+                level_info=ldata,
+                is_unlocked=(ldata['level'] <= 1),
+                on_select_cb=self.select_level,
+                size_hint=(None, None), size=(130, 130)
+            )
+            self.grid.add_widget(lb)
+            self.level_buttons.append(lb)
+
         # --- ปุ่ม BACK ---
         self.btn_back = Button(
             text="⬅  BACK", font_size='22sp', font_name=CUSTOM_FONT,
