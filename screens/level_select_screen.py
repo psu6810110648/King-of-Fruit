@@ -83,6 +83,10 @@ class LevelButton(FloatLayout):
             self.grid.add_widget(lb)
             self.level_buttons.append(lb)
 
+        # --- นำตารางใส่ ScrollView และนำขึ้นจอหลัก (Commit 13) ---
+        self.scroll.add_widget(self.grid)
+        self.layout.add_widget(self.scroll)
+
         # --- ปุ่ม BACK ---
         self.btn_back = Button(
             text="⬅  BACK", font_size='22sp', font_name=CUSTOM_FONT,
