@@ -21,10 +21,12 @@ class TimeBar(Widget):
         self.max_value = max_value
         self.value = max_value
         with self.canvas:
-            Color(0.2, 0.2, 0.2, 0.8)
-            self.bg_rect = RoundedRectangle(pos=self.pos, size=self.size, radius=[10])
-            self.fg_color = Color(0, 0.8, 0, 1)
-            self.fg_rect = RoundedRectangle(pos=self.pos, size=self.size, radius=[10])
+            # พื้นหลังหลอดเวลาสีชมพูเทาละมุนๆ
+            Color(0.9, 0.85, 0.85, 0.8)
+            self.bg_rect = RoundedRectangle(pos=self.pos, size=self.size, radius=[15])
+            # สีเริ่มต้นเป็นพาสเทลเขียวมินต์
+            self.fg_color = Color(0.5, 0.9, 0.7, 1)
+            self.fg_rect = RoundedRectangle(pos=self.pos, size=self.size, radius=[15])
         self.bind(pos=self.update_rect, size=self.update_rect)
 
     def update_rect(self, *args):
@@ -37,9 +39,13 @@ class TimeBar(Widget):
         percent = max(0, min(1, current_value / self.max_value))
         self.fg_rect.pos = self.pos
         self.fg_rect.size = (self.width, self.height * percent)
-        if percent > 0.5: self.fg_color.rgba = (0.2, 0.8, 0.2, 1)
-        elif percent > 0.2: self.fg_color.rgba = (1, 0.8, 0, 1)
-        else: self.fg_color.rgba = (1, 0.2, 0.2, 1)
+        # เปลี่ยนสีหลอดเวลาเป็นโทนพาสเทลน่ารักๆ
+        if percent > 0.5: 
+            self.fg_color.rgba = (0.5, 0.9, 0.7, 1) # เขียวมินต์
+        elif percent > 0.2: 
+            self.fg_color.rgba = (1, 0.9, 0.5, 1) # เหลืองพาสเทล
+        else: 
+            self.fg_color.rgba = (1, 0.6, 0.6, 1)
 
 # --- 2. คลาสปุ่มไพ่ (กันทะลุ + Disable) ---
 class TileButton(Button):
