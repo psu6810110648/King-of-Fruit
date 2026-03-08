@@ -310,6 +310,7 @@ class GameScreen(Screen):
             self.game_over(is_win=False)
 
     def generate_tiles(self):
+        # สุ่มและสร้างการ์ดผลไม้ลงบนกระดานตามระดับความยาก
         self.tiles = []
         self.slots = []
         self.update_visual_slots() 
@@ -460,6 +461,7 @@ class GameScreen(Screen):
             self.slot_grid.add_widget(slot)
 
     def check_match(self):
+        # ตรวจสอบว่ามีผลไม้ชนิดเดียวกันครบ 3 ชิ้นในช่องด้านล่างหรือไม่
         from collections import Counter
         fruit_count = Counter(self.slots)
         for fruit, count in fruit_count.items():
@@ -472,11 +474,13 @@ class GameScreen(Screen):
         return False
 
     def check_win(self):
+        # เช็คว่าเคลียร์ผลไม้บนกระดานหมดหรือยัง ถ้าหมด=ชนะ
         visible_tiles = [t for t in self.tiles if t['widget'].opacity > 0]
         if len(visible_tiles) == 0:
             self.game_over(is_win=True)
 
     def game_over(self, is_win):
+        # จบเกม (แพ้หรือชนะ) รันป๊อปอัปให้ผู้เล่นดูผลลัพธ์
         if self.game_over_flag: return 
         self.game_over_flag = True
         if hasattr(self, 'timer_event'): self.timer_event.cancel()
