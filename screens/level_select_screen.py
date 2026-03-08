@@ -28,84 +28,57 @@ LEVEL_DATA = [
 
 class LevelButton(FloatLayout):
     """ปุ่มกลมแสดงด่าน พร้อมสถานะ locked/unlocked"""
-    def __init__(self, **kwargs):
-        super(LevelSelectScreen, self).__init__(**kwargs)
-        self.layout = FloatLayout()
+    def __init__(self, level_info, is_unlocked, on_select_cb, **kwargs):
+        super().__init__(**kwargs)
+        self.level = level_info['level']
+        self.is_unlocked = is_unlocked
+        self.select_callback = on_select_cb
 
-        # --- พื้นหลัง ---
-        self.bg = Image(
-            source='assets/images/bg.png',
-            allow_stretch=True, keep_ratio=False,
-        )
-        self.layout.add_widget(self.bg)
+        # --- วงกลมพื้นหลัง ---
+        with self.canvas.before:
+            # เงา
+            Color(0, 0, 0, 0.3)
+            self.shadow = Ellipse(pos=(self.x + 4, self.y - 4), size=self.size)
+            # วงกลมหลัก
+            if is_unlocked:
+                self.circle_color = Color(0.2, 0.7, 0.2, 1)  # เขียว
+            else:
+                self.circle_color = Color(0.45, 0.45, 0.45, 1)  # เทา
+            self.circle = Ellipse(pos=self.pos, size=self.size)
 
-        # --- Dim overlay ---
-        dim = FloatLayout()
-        with dim.canvas.before:
-            Color(0, 0, 0, 0.35)
-            dim.rect = RoundedRectangle(pos=(0, 0), size=(2000, 2000))
-        self.layout.add_widget(dim)
+        self.bind(pos=self._update, size=self._update)
 
-        # --- Title (เงา + ตัวจริง) ---
-        title_shadow = Label(
-            text="SELECT LEVEL", font_size='52sp', font_name=CUSTOM_FONT,
-            bold=True, color=(0, 0, 0, 0.5),
-            pos_hint={'center_x': 0.505, 'center_y': 0.875}
-        )
-        self.layout.add_widget(title_shadow)
+        # --- เลขด่าน หรือ 🔒 ---
+        if is_unlocked:
+            display_text = str(level_info['level'])
+        else:
+            display_text = "🔒"
 
-        title = Label(
-            text="SELECT LEVEL", font_size='52sp', font_name=CUSTOM_FONT,
+        # (Commit 14: ปรับตำแหน่งเลขด่าน)
+        self.lbl_num = Label(
+            text=display_text, font_size='42sp', font_name=CUSTOM_FONT,
             bold=True, color=(1, 1, 1, 1),
-            outline_color=(0, 0, 0, 1), outline_width=4,
-            pos_hint={'center_x': 0.5, 'center_y': 0.88}
+            outline_color=(0, 0, 0, 1), outline_width=2,
+            pos_hint={'center_x': 0.5, 'center_y': 0.65}
         )
-        self.layout.add_widget(title)
+        self.add_widget(self.lbl_num)
 
-        # --- สร้างพื้นที่ Scroll (Commit 9) ---
-        self.scroll = ScrollView(size_hint=(0.85, 0.6), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-
-        # --- สร้างตาราง 3 คอลัมน์ (Commit 10) ---
-        self.grid = GridLayout(cols=3, spacing=40, padding=20, size_hint_y=None)
-        
-        # --- ทำให้ตารางเลื่อนลงได้ (Commit 11) ---
-        self.grid.bind(minimum_height=self.grid.setter('height'))
-
-        # --- วางปุ่มลงในตาราง (Commit 12) ---
-        self.level_buttons = []
-        for ldata in LEVEL_DATA:
-            lb = LevelButton(
-                level_info=ldata,
-                is_unlocked=(ldata['level'] <= 1),
-                on_select_cb=self.select_level,
-                size_hint=(None, None), size=(130, 130)
-            )
-            self.grid.add_widget(lb)
-            self.level_buttons.append(lb)
-
-        # --- นำตารางใส่ ScrollView และนำขึ้นจอหลัก (Commit 13) ---
-        self.scroll.add_widget(self.grid)
-        self.layout.add_widget(self.scroll)
-
-        # --- ปุ่ม BACK ---
-        self.btn_back = Button(
-            text="⬅  BACK", font_size='22sp', font_name=CUSTOM_FONT,
-            bold=True,
-            background_normal='', background_color=(0, 0, 0, 0),
-            size_hint=(None, None), size=(180, 60),
-            pos_hint={'center_x': 0.5, 'center_y': 0.15}
+        # (Commit 15: ปรับตำแหน่งชื่อด่าน)
+        self.lbl_name = Label(
+            text=level_info['name'], font_size='18sp', font_name=CUSTOM_FONT,
+            bold=True, color=(1, 1, 0.7, 1) if is_unlocked else (0.7, 0.7, 0.7, 1),
+            pos_hint={'center_x': 0.5, 'center_y': 0.25}
         )
-        with self.btn_back.canvas.before:
-            Color(0.7, 0.25, 0.25, 1)
-            self.back_bg = RoundedRectangle(
-                pos=self.btn_back.pos, size=self.btn_back.size, radius=[20]
-            )
-        self.btn_back.bind(pos=self._update_back, size=self._update_back)
-        self.btn_back.bind(on_press=self.go_back)
-        self.layout.add_widget(self.btn_back)
+        self.add_widget(self.lbl_name)
 
-        self.add_widget(self.layout)
-        
+        # (Commit 15: ปรับตำแหน่งคำอธิบาย)
+        self.lbl_desc = Label(
+            text=level_info['desc'], font_size='13sp', font_name=CUSTOM_FONT,
+            color=(1, 1, 1, 0.8) if is_unlocked else (0.6, 0.6, 0.6, 0.8),
+            pos_hint={'center_x': 0.5, 'center_y': 0.10}
+        )
+        self.add_widget(self.lbl_desc)
+
     # 🔥 จัดการ touch โดยตรง ไม่ต้องใช้ปุ่มโปร่งใส
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos) and self.is_unlocked:
@@ -169,8 +142,30 @@ class LevelSelectScreen(Screen):
         )
         self.layout.add_widget(title)
 
-        # (เราลบโค้ดคำนวณตำแหน่งและลูปสร้างปุ่มแบบเก่าออกไปจากตรงนี้แล้ว)
+        # --- สร้างพื้นที่ Scroll (Commit 9) ---
+        self.scroll = ScrollView(size_hint=(0.85, 0.6), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        
+        # --- สร้างตาราง 3 คอลัมน์ (Commit 10) ---
+        self.grid = GridLayout(cols=3, spacing=40, padding=20, size_hint_y=None)
+        
+        # --- ทำให้ตารางเลื่อนลงได้ (Commit 11) ---
+        self.grid.bind(minimum_height=self.grid.setter('height'))
+        
+        # --- วางปุ่มด่านลงในตาราง (Commit 12) ---
+        self.level_buttons = []
+        for ldata in LEVEL_DATA:
+            lb = LevelButton(
+                level_info=ldata,
+                is_unlocked=(ldata['level'] <= 1),
+                on_select_cb=self.select_level,
+                size_hint=(None, None), size=(130, 130)
+            )
+            self.grid.add_widget(lb)
+            self.level_buttons.append(lb)
 
+        # --- นำตารางใส่ ScrollView และนำขึ้นจอหลัก (Commit 13) ---
+        self.scroll.add_widget(self.grid)
+        self.layout.add_widget(self.scroll)
 
         # --- ปุ่ม BACK ---
         self.btn_back = Button(
@@ -194,7 +189,6 @@ class LevelSelectScreen(Screen):
     def on_enter(self):
         """Sync สถานะ unlock จาก App ทุกครั้งที่เข้าหน้านี้"""
         app = App.get_running_app()
-        # ตอนนี้ self.level_buttons ยังไม่มี รอสร้างใน Commit 12
         if hasattr(self, 'level_buttons'):
             for lb in self.level_buttons:
                 lb.refresh_state(lb.level <= app.unlocked_level)
