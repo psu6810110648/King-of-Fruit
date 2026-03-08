@@ -66,7 +66,7 @@ class SettingsScreen(Screen):
 
         # --- BGM Volume ---
         lbl_bgm = Label(
-            text="🎵  BGM Volume", font_size='22sp', font_name=CUSTOM_FONT,
+            text="BGM Volume", font_size='22sp', font_name=CUSTOM_FONT,
             bold=True, color=(1, 0.95, 0.6, 1),
             halign='left', valign='middle',
             size_hint_y=None, height=35,
@@ -94,7 +94,7 @@ class SettingsScreen(Screen):
 
         # --- SFX Volume ---
         lbl_sfx = Label(
-            text="🔊  SFX Volume", font_size='22sp', font_name=CUSTOM_FONT,
+            text="SFX Volume", font_size='22sp', font_name=CUSTOM_FONT,
             bold=True, color=(1, 0.95, 0.6, 1),
             halign='left', valign='middle',
             size_hint_y=None, height=35,
@@ -122,7 +122,7 @@ class SettingsScreen(Screen):
 
         # --- Mute Toggle ---
         self.btn_mute = Button(
-            text="🔇  MUTE ALL", font_size='24sp', font_name=CUSTOM_FONT,
+            text="MUTE ALL", font_size='24sp', font_name=CUSTOM_FONT,
             bold=True,
             background_normal='', background_color=(0, 0, 0, 0),
             size_hint_y=None, height=65,
@@ -138,7 +138,7 @@ class SettingsScreen(Screen):
 
         # --- Back Button ---
         self.btn_back = Button(
-            text="⬅  BACK", font_size='24sp', font_name=CUSTOM_FONT,
+            text="BACK", font_size='24sp', font_name=CUSTOM_FONT,
             bold=True,
             background_normal='', background_color=(0, 0, 0, 0),
             size_hint_y=None, height=65,
@@ -189,10 +189,10 @@ class SettingsScreen(Screen):
 
     def _update_mute_visual(self, is_muted):
         if is_muted:
-            self.btn_mute.text = "🔈  UNMUTE"
+            self.btn_mute.text = "UNMUTE"
             self.mute_btn_color.rgba = (0.2, 0.6, 0.8, 1)  # ฟ้า = muted
         else:
-            self.btn_mute.text = "🔇  MUTE ALL"
+            self.btn_mute.text = "MUTE ALL"
             self.mute_btn_color.rgba = (0.85, 0.25, 0.25, 1)  # แดง = unmuted
 
     def go_back(self, instance):
