@@ -485,15 +485,17 @@ class GameScreen(Screen):
         self.game_over_flag = True
         if hasattr(self, 'timer_event'): self.timer_event.cancel()
         
-        # ✅ ปลดล็อคด่านถัดไปเมื่อชนะ
         if is_win:
+            # ✅ ปลดล็อคด่านถัดไปเมื่อชนะ
             from kivy.app import App
             app = App.get_running_app()
             next_level = self.current_level + 1
             if next_level > app.unlocked_level:
                 app.unlocked_level = next_level
-        
-        self.show_popup(is_win)
+            self.show_popup(True)
+        else:
+            # นำทางไปหน้า LoseScreen แจ้งแพ้เกม
+            self.manager.current = 'lose'
 
     def show_popup(self, is_win):
         popup = FloatLayout()

@@ -8,6 +8,7 @@ from screens.result_screen import ResultScreen
 from screens.game_screen import GameScreen
 from screens.settings_screen import SettingsScreen
 from screens.level_select_screen import LevelSelectScreen
+from screens.lose_screen import LoseScreen
 
 class KingOfFruitApp(App):
     def build(self):
@@ -25,6 +26,7 @@ class KingOfFruitApp(App):
         sm.add_widget(ResultScreen(name='result'))
         sm.add_widget(SettingsScreen(name='settings'))
         sm.add_widget(LevelSelectScreen(name='level_select'))
+        sm.add_widget(LoseScreen(name='lose'))
         sm.current = 'start'  # ตั้งค่าให้เริ่มที่หน้าเมนูหลัก
         
         # 🎵 ระบบเสียงเพลงพื้นหลัง (BGM)
