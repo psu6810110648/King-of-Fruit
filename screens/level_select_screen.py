@@ -10,7 +10,6 @@ from kivy.graphics import Color, RoundedRectangle, Ellipse
 from kivy.app import App
 
 CUSTOM_FONT = 'assets/fonts/cute.ttf'
-
 # --- ข้อมูลด่าน ---
 LEVEL_DATA = [
     {'level': 1, 'name': 'ทุ่งผลไม้',   'desc': '7 ชุด / 60 วินาที'},
@@ -24,8 +23,6 @@ LEVEL_DATA = [
     {'level': 9, 'name': 'เกาะมะพร้าว', 'desc': '30 ชุด / 90 วินาที'},
     {'level': 10, 'name': 'สวรรค์ผลไม้', 'desc': '35 ชุด / 100 วินาที'},
 ]
-
-
 class LevelButton(FloatLayout):
     """ปุ่มกลมแสดงด่าน พร้อมสถานะ locked/unlocked"""
     def __init__(self, level_info, is_unlocked, on_select_cb, **kwargs):
@@ -33,53 +30,48 @@ class LevelButton(FloatLayout):
         self.level = level_info['level']
         self.is_unlocked = is_unlocked
         self.select_callback = on_select_cb
-
         # --- วงกลมพื้นหลัง ---
         with self.canvas.before:
-            # เงา
             Color(0, 0, 0, 0.3)
             self.shadow = Ellipse(pos=(self.x + 4, self.y - 4), size=self.size)
-            # วงกลมหลัก
             if is_unlocked:
-                self.circle_color = Color(0.2, 0.7, 0.2, 1)  # เขียว
+                self.circle_color = Color(0.2, 0.7, 0.2, 1) 
             else:
-                self.circle_color = Color(0.45, 0.45, 0.45, 1)  # เทา
+                self.circle_color = Color(0.45, 0.45, 0.45, 1)
             self.circle = Ellipse(pos=self.pos, size=self.size)
 
         self.bind(pos=self._update, size=self._update)
 
-        # --- เลขด่าน หรือ 🔒 ---
-        if is_unlocked:
-            display_text = str(level_info['level'])
-        else:
-            display_text = "🔒"
-
-        # (Commit 14: ปรับตำแหน่งเลขด่าน)
+        # --- เลขด่าน ---
+        display_text = str(level_info['level'])
         self.lbl_num = Label(
-            text=display_text, font_size='42sp', font_name=CUSTOM_FONT,
-            bold=True, color=(1, 1, 1, 1),
-            outline_color=(0, 0, 0, 1), outline_width=2,
-            pos_hint={'center_x': 0.5, 'center_y': 0.65}
+            text=display_text, 
+            font_size='32sp',
+            font_name=CUSTOM_FONT,
+            bold=True, 
+            color=(1, 1, 1, 1) if is_unlocked else (0.6, 0.6, 0.6, 1),
+            outline_color=(0, 0, 0, 1) if is_unlocked else (0, 0, 0, 0.5), 
+            outline_width=2,
+            pos_hint={'center_x': 0.5, 'center_y': 0.6}
         )
         self.add_widget(self.lbl_num)
-
-        # (Commit 15: ปรับตำแหน่งชื่อด่าน)
         self.lbl_name = Label(
-            text=level_info['name'], font_size='18sp', font_name=CUSTOM_FONT,
-            bold=True, color=(1, 1, 0.7, 1) if is_unlocked else (0.7, 0.7, 0.7, 1),
+            text=level_info['name'], 
+            font_size='16sp',
+            font_name=CUSTOM_FONT,
+            bold=True, 
+            color=(1, 1, 0.7, 1) if is_unlocked else (0.7, 0.7, 0.7, 1),
             pos_hint={'center_x': 0.5, 'center_y': 0.25}
         )
         self.add_widget(self.lbl_name)
-
-        # (Commit 15: ปรับตำแหน่งคำอธิบาย)
         self.lbl_desc = Label(
-            text=level_info['desc'], font_size='13sp', font_name=CUSTOM_FONT,
+            text=level_info['desc'], 
+            font_size='11sp',
+            font_name=CUSTOM_FONT,
             color=(1, 1, 1, 0.8) if is_unlocked else (0.6, 0.6, 0.6, 0.8),
-            pos_hint={'center_x': 0.5, 'center_y': 0.10}
+            pos_hint={'center_x': 0.5, 'center_y': 0.12}
         )
         self.add_widget(self.lbl_desc)
-
-    # 🔥 จัดการ touch โดยตรง ไม่ต้องใช้ปุ่มโปร่งใส
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos) and self.is_unlocked:
             self.select_callback(self.level)
@@ -95,14 +87,18 @@ class LevelButton(FloatLayout):
     def refresh_state(self, is_unlocked):
         """อัปเดตสถานะ lock/unlock ตอน on_enter"""
         self.is_unlocked = is_unlocked
+        self.lbl_num.text = str(self.level)
+        
         if is_unlocked:
             self.circle_color.rgba = (0.2, 0.7, 0.2, 1)
-            self.lbl_num.text = str(self.level)
+            self.lbl_num.color = (1, 1, 1, 1)
+            self.lbl_num.outline_color = (0, 0, 0, 1)
             self.lbl_name.color = (1, 1, 0.7, 1)
             self.lbl_desc.color = (1, 1, 1, 0.8)
         else:
             self.circle_color.rgba = (0.45, 0.45, 0.45, 1)
-            self.lbl_num.text = "🔒"
+            self.lbl_num.color = (0.6, 0.6, 0.6, 1)
+            self.lbl_num.outline_color = (0, 0, 0, 0.5)
             self.lbl_name.color = (0.7, 0.7, 0.7, 1)
             self.lbl_desc.color = (0.6, 0.6, 0.6, 0.8)
 
@@ -141,17 +137,9 @@ class LevelSelectScreen(Screen):
             pos_hint={'center_x': 0.5, 'center_y': 0.88}
         )
         self.layout.add_widget(title)
-
-        # --- สร้างพื้นที่ Scroll (Commit 9) ---
         self.scroll = ScrollView(size_hint=(0.85, 0.6), pos_hint={'center_x': 0.5, 'center_y': 0.5})
-        
-        # --- สร้างตาราง 3 คอลัมน์ (Commit 10) ---
         self.grid = GridLayout(cols=3, spacing=40, padding=20, size_hint_y=None)
-        
-        # --- ทำให้ตารางเลื่อนลงได้ (Commit 11) ---
         self.grid.bind(minimum_height=self.grid.setter('height'))
-        
-        # --- วางปุ่มด่านลงในตาราง (Commit 12) ---
         self.level_buttons = []
         for ldata in LEVEL_DATA:
             lb = LevelButton(
@@ -162,14 +150,13 @@ class LevelSelectScreen(Screen):
             )
             self.grid.add_widget(lb)
             self.level_buttons.append(lb)
-
-        # --- นำตารางใส่ ScrollView และนำขึ้นจอหลัก (Commit 13) ---
         self.scroll.add_widget(self.grid)
         self.layout.add_widget(self.scroll)
 
         # --- ปุ่ม BACK ---
         self.btn_back = Button(
-            text="⬅  BACK", font_size='22sp', font_name=CUSTOM_FONT,
+            text="BACK",
+            font_size='22sp', font_name=CUSTOM_FONT,
             bold=True,
             background_normal='', background_color=(0, 0, 0, 0),
             size_hint=(None, None), size=(180, 60),
@@ -202,5 +189,5 @@ class LevelSelectScreen(Screen):
         self.manager.current = 'start'
 
     def _update_back(self, *args):
-        self.back_bg.pos = self.btn_back.pos
+        self.back_bg.pos = self.btn_back.pos    
         self.back_bg.size = self.btn_back.size
