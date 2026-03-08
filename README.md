@@ -2,12 +2,8 @@
 โปรเจกต์เกมจับคู่ไพ่ผลไม้ 3 ใบ (King-of-Fruit) พัฒนาด้วย Kivy
 
 <div align="center">
-  <img src="assets/images/bging.png" alt="King of Fruit Main Screen" width="700"/>
-  <br/><i>หน้าจอหลัก (Start Screen)</i><br/><br/>
-  <br/><i>หน้าจอการตั้งค่า (Settings Screen)</i><br/><br/>
-  
-  <img src="assets/images/bg1.png" alt="Gameplay Level 1" width="400"/>
-  <br/><i>บรรยากาศการเล่นเกมเพลย์ (Level 1 แบบ Grid แบบง่ายดาย และ Level 2 แบบซ้อนเลเยอร์ทับกัน)</i>
+  <img src="assets/images/bg1.png" alt="King-of-Fruit Gameplay" width="600"/>
+  <br/><i>ภาพบรรยากาศภายในเกม King-of-Fruit</i>
 </div>
 
 ## สมาชิกในกลุ่ม
