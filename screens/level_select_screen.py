@@ -28,56 +28,62 @@ LEVEL_DATA = [
 
 class LevelButton(FloatLayout):
     """ปุ่มกลมแสดงด่าน พร้อมสถานะ locked/unlocked"""
-    def __init__(self, level_info, is_unlocked, on_select_cb, **kwargs):
-        super().__init__(**kwargs)
-        self.level = level_info['level']
-        self.is_unlocked = is_unlocked
-        self.select_callback = on_select_cb
+    def __init__(self, **kwargs):
+        super(LevelSelectScreen, self).__init__(**kwargs)
+        self.layout = FloatLayout()
 
-        # --- วงกลมพื้นหลัง ---
-        with self.canvas.before:
-            # เงา
-            Color(0, 0, 0, 0.3)
-            self.shadow = Ellipse(pos=(self.x + 4, self.y - 4), size=self.size)
-            # วงกลมหลัก
-            if is_unlocked:
-                self.circle_color = Color(0.2, 0.7, 0.2, 1)  # เขียว
-            else:
-                self.circle_color = Color(0.45, 0.45, 0.45, 1)  # เทา
-            self.circle = Ellipse(pos=self.pos, size=self.size)
+        # --- พื้นหลัง ---
+        self.bg = Image(
+            source='assets/images/bg.png',
+            allow_stretch=True, keep_ratio=False,
+        )
+        self.layout.add_widget(self.bg)
 
-        self.bind(pos=self._update, size=self._update)
+        # --- Dim overlay ---
+        dim = FloatLayout()
+        with dim.canvas.before:
+            Color(0, 0, 0, 0.35)
+            dim.rect = RoundedRectangle(pos=(0, 0), size=(2000, 2000))
+        self.layout.add_widget(dim)
 
-        # --- เลขด่าน หรือ 🔒 ---
-        if is_unlocked:
-            display_text = str(level_info['level'])
-        else:
-            display_text = "🔒"
+        # --- Title (เงา + ตัวจริง) ---
+        title_shadow = Label(
+            text="SELECT LEVEL", font_size='52sp', font_name=CUSTOM_FONT,
+            bold=True, color=(0, 0, 0, 0.5),
+            pos_hint={'center_x': 0.505, 'center_y': 0.875}
+        )
+        self.layout.add_widget(title_shadow)
 
-        self.lbl_num = Label(
-            text=display_text, font_size='42sp', font_name=CUSTOM_FONT,
+        title = Label(
+            text="SELECT LEVEL", font_size='52sp', font_name=CUSTOM_FONT,
             bold=True, color=(1, 1, 1, 1),
-            outline_color=(0, 0, 0, 1), outline_width=2,
-            pos_hint={'center_x': 0.5, 'center_y': 0.55}
+            outline_color=(0, 0, 0, 1), outline_width=4,
+            pos_hint={'center_x': 0.5, 'center_y': 0.88}
         )
-        self.add_widget(self.lbl_num)
+        self.layout.add_widget(title)
 
-        # --- ชื่อด่าน ---
-        self.lbl_name = Label(
-            text=level_info['name'], font_size='18sp', font_name=CUSTOM_FONT,
-            bold=True, color=(1, 1, 0.7, 1) if is_unlocked else (0.7, 0.7, 0.7, 1),
-            pos_hint={'center_x': 0.5, 'center_y': -0.15}
+        # --- สร้างพื้นที่ Scroll (Commit 9) ---
+        self.scroll = ScrollView(size_hint=(0.85, 0.6), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+
+        # --- ปุ่ม BACK ---
+        self.btn_back = Button(
+            text="⬅  BACK", font_size='22sp', font_name=CUSTOM_FONT,
+            bold=True,
+            background_normal='', background_color=(0, 0, 0, 0),
+            size_hint=(None, None), size=(180, 60),
+            pos_hint={'center_x': 0.5, 'center_y': 0.15}
         )
-        self.add_widget(self.lbl_name)
+        with self.btn_back.canvas.before:
+            Color(0.7, 0.25, 0.25, 1)
+            self.back_bg = RoundedRectangle(
+                pos=self.btn_back.pos, size=self.btn_back.size, radius=[20]
+            )
+        self.btn_back.bind(pos=self._update_back, size=self._update_back)
+        self.btn_back.bind(on_press=self.go_back)
+        self.layout.add_widget(self.btn_back)
 
-        # --- คำอธิบาย ---
-        self.lbl_desc = Label(
-            text=level_info['desc'], font_size='13sp', font_name=CUSTOM_FONT,
-            color=(1, 1, 1, 0.8) if is_unlocked else (0.6, 0.6, 0.6, 0.8),
-            pos_hint={'center_x': 0.5, 'center_y': -0.32}
-        )
-        self.add_widget(self.lbl_desc)
-
+        self.add_widget(self.layout)
+        
     # 🔥 จัดการ touch โดยตรง ไม่ต้องใช้ปุ่มโปร่งใส
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos) and self.is_unlocked:
