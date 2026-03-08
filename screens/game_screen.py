@@ -43,7 +43,7 @@ class TimeBar(Widget):
         if percent > 0.5: 
             self.fg_color.rgba = (0.5, 0.9, 0.7, 1) # เขียวมินต์
         elif percent > 0.2: 
-            self.fg_color.rgba = (1, 0.9, 0.5, 1) # เหลืองพาสเทล
+            self.fg_color.rgba = (1, 0.9, 0.5, 1) 
         else: 
             self.fg_color.rgba = (1, 0.6, 0.6, 1)
 
@@ -55,13 +55,13 @@ class TileButton(Button):
         self.background_color = (0, 0, 0, 0)
         self.size_hint = (None, None)
         self.is_blocked = False 
-        
+
         with self.canvas.before:
-            Color(0, 0, 0, 0.3)
-            self.shadow = RoundedRectangle(pos=(self.x+4, self.y-4), size=self.size, radius=[15])
-            self.bg_color = Color(0.95, 0.95, 0.9, 1)
-            self.card_bg = RoundedRectangle(pos=self.pos, size=self.size, radius=[15])
-            
+            Color(0.9, 0.7, 0.7, 0.4)
+            self.shadow = RoundedRectangle(pos=(self.x+4, self.y-4), size=self.size, radius=[20])
+            self.bg_color = Color(1, 0.98, 0.96, 1)
+            self.card_bg = RoundedRectangle(pos=self.pos, size=self.size, radius=[20])
+
         with self.canvas.after:
             Color(1, 1, 1, 1)
             pad = 10
